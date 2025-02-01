@@ -80,7 +80,6 @@ describe('Event Routes', () => {
         time: '16:00',
         description: 'Updated description'
       });
-    console.log(res.body);
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('message', 'Event updated successfully');
   });
@@ -92,7 +91,6 @@ describe('Event Routes', () => {
       .post(`/events/${eventId}/register`)
       .set('Authorization', `Bearer ${token}`)
       .send();
-    console.log(res.body)
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('message', 'Organizer cannot be participant of the event');
   });
