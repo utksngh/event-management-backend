@@ -19,15 +19,20 @@ exports.registerForEvents = async (req, res) => {
     if(!event) return res.status(404).json({ message : "Event not found"});
     requestingUser = req.user.id
     if (event.organizer === requestingUser){
-        res.status(200).json({ message : "Organizer cannot be participant of the event"})
+        return res.status(200).json({ message : "Organizer cannot be participant of the event"})
     }
 
     if(!event.participants.includes(requestingUser)){
         event.participants.push(req.user.id)
-        await sendEmail(req.user.email, `Registration Confirmed : ${event.title}`, `Hello ${req.user.name}, \n\n You have successfully registered for ${event.title} \n\n\ Event Details ${event.date},${event.time},${event.description}`)
+        // try {
+        //     await sendEmail(req.user.email, `Registration Confirmed : ${event.title}`, `Hello ${req.user.name}, \n\n You have successfully registered for ${event.title} \n\n Event Details: ${event.date}, ${event.time}, ${event.description}`);
+        //   } catch (error) {
+            
+        //   }
+          
     }
 
-    res.status(201).json({ message : "Registered for the event successfully"})
+    return res.status(201).json({ message : "Registered for the event successfully"})
 };
 
 exports.deleteEvent = async (req, res) => {
@@ -35,14 +40,6 @@ exports.deleteEvent = async (req, res) => {
 
     if(!event) return res.status(404).json({ message : "Event not found"})
     events.pop(event)
-    eventParticipants = event["participants"]
-    if (eventParticipants.length > 0){
-        for (eventParticipant of eventParticipants)
-        {
-            eventParticipantUser = users.find(u => u.id === eventParticipant)
-            await sendEmail(eventParticipantUser.email, `Event Deleted : ${event.title}`, `Hello ${eventParticipantUser.name}, \n\n Event ${event.title} has been cancelled \n\n\ Event Details ${event.date},${event.time},${event.description}`)
-        }
-    }
     return res.status(200).json({ message : "Event deleted successfully" })
 }
 
@@ -56,13 +53,5 @@ exports.updateEvent = async (req, res) => {
     event.title = title;
     event.date = date;
     event.description = description;
-    eventParticipants = event["participants"]
-    if (eventParticipants.length > 0){
-        for (eventParticipant of eventParticipants)
-        {
-            eventParticipantUser = users.find(u => u.id === eventParticipant)
-            await sendEmail(eventParticipantUser.email, `Event Deleted : ${event.title}`, `Hello ${eventParticipantUser.name}, \n\n Event ${event.title} has been cancelled \n\n\ Event Details ${event.date},${event.time},${event.description}`)
-        }
-    }
     return res.status(200).json({ message : "Event updated successfully" , event})
 }
